@@ -3,6 +3,12 @@ from discord import app_commands
 import asyncio
 import os
 from keep_alive import keep_alive
+from urllib.request import Request, urlopen
+from urllib.error import URLError, HTTPError
+import time
+
+url = "https://neptun-web4.tr.pte.hu/hallgato/login.aspx"
+req = Request(url)
 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
@@ -11,21 +17,35 @@ tree = app_commands.CommandTree(client)
 
 @tree.command(name="help",
               description="...",
-              guild=discord.Object(id=1040967504006217808))
+              guild=discord.Object(id=1144550911268626482))
 async def help_command(interaction):
   embed = discord.Embed(
     title="nem",
     color=0xffffff)
   await interaction.response.send_message(embed=embed)
 
+@tree.command(name="neptunstatus",
+              description="Neptun státusz / valaszidő",
+              guild=discord.Object(id=1144550911268626482))
+async def neptunstatus_command(interaction):
+  try:
+    start_time = time.time()  # Record the start time
+    response = urlopen(req)
+    end_time = time.time()  # Record the end time
+    response_time = end_time - start_time
+  except HTTPError as e:
+    print('The server couldn\'t fulfill the request.')
+    print('Error code: ', e.code)
+    embed = discord.Embed(title="Neptun nem válaszolt. Error code: " + str(e.code), color=0xe74c3c)
 
-@client.event
-async def on_ready():
+  except URLError as e:
 
-  await tree.sync(guild=discord.Object(id=1040967504006217808))
+    embed = discord.Embed(title="Neptun nem elérhető. Indok: " + str(e.reason), color=0xe74c3c)
 
-  print("Ready!")
-
+  else:
+    embed = discord.Embed(
+      title="Neptun fut. "+ f'Válaszidő: {response_time:.2f}mp',description="https://neptun-web3.tr.pte.hu/hallgato/login.aspx",color=0x2ecc71)
+  await interaction.response.send_message(embed=embed)
 
 @client.event
 async def on_message(message):
