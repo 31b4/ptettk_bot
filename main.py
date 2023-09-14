@@ -38,10 +38,6 @@ async def neptunstatus_command(interaction):
     print('Error code: ', e.code)
     embed = discord.Embed(title="Neptun nem válaszolt. Error code: " + str(e.code), color=0xe74c3c)
 
-  except URLError as e:
-
-    embed = discord.Embed(title="Neptun nem elérhető. Indok: " + str(e.reason), color=0xe74c3c)
-
   else:
     embed = discord.Embed(
       title="Neptun fut. "+ f'Válaszidő: {response_time:.2f}mp',description="https://neptun-web3.tr.pte.hu/hallgato/login.aspx",color=0x2ecc71)
